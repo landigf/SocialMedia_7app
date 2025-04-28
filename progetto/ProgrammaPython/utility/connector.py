@@ -7,7 +7,7 @@ def connetti_db():
             host='localhost',
             database='seven_app',
             user='root',
-            password='******'
+            password='root1234'
         )
         if connessione.is_connected():
             return connessione

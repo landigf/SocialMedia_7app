@@ -1,5 +1,5 @@
 from utility.connector import connetti_db
-from operazioni.gestore_operazioni import do
+from gestore_operazioni import do
 
 all_ops = {
     # Accesso
@@ -12,6 +12,7 @@ all_ops = {
     'messages': "Apri i messaggi",
     'show_profile': "Mostra il profilo",
     'create_post': "Crea un nuovo post",
+    'notifications': "Visualizza notifiche",
 
     # Feed (tipo Instagram)
     'show_post': "Visualizza un post nel feed",
@@ -24,13 +25,13 @@ all_ops = {
     'open_chat': "Apri una chat",
     'load_more_messages': "Carica altri messaggi",
     'send_message': "Invia un nuovo messaggio",
+    'new_chat': "Inizia una nuova chat",
 
     # Profilo
     'edit_profile': "Modifica il tuo profilo",
     'delete_profile': "Elimina il tuo profilo",
     'friendlist': "Visualizza la lista amici",
     'show_user_posts': "Visualizza i post del profilo",
-
 
     # Ricerca
     'search_users': "Cerca utenti",
@@ -51,14 +52,13 @@ all_ops = {
 }
 
 
-
 ops_by_state = {
     'start': (
         'login', 'register'
     ),
 
     'logged': (
-        'feed', 'search', 'messages', 'show_profile', 'create_post'
+        'feed', 'search', 'messages', 'show_profile', 'create_post', 'notifications'
     ),
 
     # Feed stile Instagram
@@ -73,7 +73,7 @@ ops_by_state = {
 
     # Messaggi (stile WhatsApp)
     'messages': (
-        'list_chats', 'open_chat', 'return_on_menu'
+        'list_chats', 'open_chat', 'new_chat', 'return_on_menu'
     ),
 
     'chat_opened': (
@@ -82,7 +82,7 @@ ops_by_state = {
 
     # Profilo personale
     'in_profile': (
-        'edit_profile', 'delete_profile', 'friendlist', 'show_user_posts', 'return_on_menu'
+        'edit_profile', 'delete_profile', 'friendlist', 'show_user_posts', 'notifications','return_on_menu'
     ),
 
     # Sui post personali
@@ -98,13 +98,12 @@ ops_by_state = {
     # Gruppi
     'on_group': (
         'post_in_group', 'group_members', 'leave_group', 'return_on_menu'
-    ),
+    )
 }
 
 
-
 def main():
-    state = 'start' # stato iniziale
+    state = 'start'  # stato iniziale
     print(" ---- Benvenuto a 7app! ----\n")
 
     connessione = connetti_db()
