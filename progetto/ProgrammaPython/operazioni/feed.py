@@ -8,7 +8,7 @@ def feed(conn, sessione):
     sessione['post_id_map'] = {}
 
     try:
-        query = "SELECT * FROM SmartFeed_V WHERE ID_Utente = %s ORDER BY PunteggioFinale DESC"
+        query = "SELECT * FROM SmartFeed_V WHERE ID_Utente = %s AND P.ID_Autore_fonte IS NULL ORDER BY PunteggioFinale DESC"
         cursor.execute(query, (sessione["ID_utente"],))
         posts = cursor.fetchall()
 

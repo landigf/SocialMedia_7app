@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Feed</h2>
+{% if posts %}
+    {% for p in posts %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">@{{ p.NicknameAutore }}</h5>
+                <p class="card-text">{{ p.Contenuto }}</p>
+                {# ==== REACTION STRIP (emoji + count) ==== #}
+                {% set counts = [p.R1, p.R2, p.R3, p.R4, p.R5, p.R6] %}
+                {% set my     = p.MyReaction or 0 %}
+                <div class="d-inline">
+                {% for i, emo in {1:"👍",2:"❤️",3:"😂",4:"😮",5:"😢",6:"😡"}.items() %}
+                    <button class="btn btn-sm {% if my==i %}btn-primary{% else %}btn-outline-secondary{% endif %}"
+                            data-id-autore="{{ p.ID_Autore }}"
+                            data-data-ora ="{{ p.Data_ora }}"
+                            data-id-reaz ="{{ i }}"
+                            onclick="return sendReaction(this)">
+                    {{ emo }} {{ counts[i-1] }}
+                    </button>
+                {% endfor %}
+                </div>
+                {# ==== FINE REACTION STRIP ==== #}
+                <a href="{{ url_for('post_detail',
+                                    id_autore=p.ID_Autore,
+                                    data_ora=p.Data_ora) }}"
+                class="btn btn-sm btn-outline-primary">
+                Apri
+                </a>
+            </div>
+            <div class="card-footer text-muted">
+                {{ p.Data_ora }}
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}
+
+
+{# ---------- footer feed: refresh & trending ---------- #}
+{# Se ci sono post, mostra il pulsante per aggiornare il feed o passare al feed personalizzato #}
+{# Se non ci sono post, mostra un messaggio e un pulsante per visualizzare i post popolari #}
+{# ---------- footer feed: refresh & trending ---------- #}
+{% if posts %}
+    {# 1 – ci sono post in lista #}
+    {% if trending %}
+        <!-- Torna al feed personalizzato -->
+        <a href="{{ url_for('feed') }}" class="btn btn-secondary w-100 mt-3">
+            ↩︎ Torna al tuo feed
+        </a>
+    {% else %}
+        <!-- Aggiorna il feed personale -->
+        <a href="{{ url_for('feed') }}" class="btn btn-secondary w-100 mt-3">
+            ↻ Aggiorna feed
+        </a>
+    {% endif %}
+{% else %}
+    {# 2 – nessun post #}
+    <p class="mt-4">Non ci sono altri post dai tuoi seguiti.</p>
+
+    {% if not trending %}
+        <!-- Offri i post popolari solo se non siamo già in modalità trending -->
+        <a href="{{ url_for('feed', trending='yes') }}" class="btn btn-outline-primary">
+            Mostra i post più popolari 🔥
+        </a>
+    {% else %}
+        <!-- Siamo in trending ma comunque vuoto -->
+        <p class="text-muted">Nessun post popolare disponibile al momento.</p>
+    {% endif %}
+{% endif %}
+{# ---------- fine footer feed ---------- #}
+{% endblock %}

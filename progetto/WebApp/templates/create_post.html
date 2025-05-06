@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Nuovo post</h2>
+<form method="post">
+    <div class="mb-3">
+        <label for="content" class="form-label">Contenuto</label>
+        <textarea class="form-control" id="content" name="content" rows="3" maxlength="255" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Pubblica</button>
+</form>
+{% endblock %}

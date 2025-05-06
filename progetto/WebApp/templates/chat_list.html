@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Le mie chat</h2>
+
+<h5>Chat individuali</h5>
+<ul class="list-group mb-4">
+  {% for c in users %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span>@{{ c.Nick }}</span>
+      <a href="{{ url_for('chat_detail', chat_type='user', chat_id=c.OtherID) }}"
+         class="btn btn-sm btn-outline-primary">Apri</a>
+    </li>
+  {% else %}
+    <li class="list-group-item">Nessuna chat privata.</li>
+  {% endfor %}
+</ul>
+
+<h5>Gruppi</h5>
+<ul class="list-group">
+  {% for g in groups %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span>{{ g.Nome }}</span>
+      <a href="{{ url_for('chat_detail', chat_type='group', chat_id=g.ID_Gruppo) }}"
+         class="btn btn-sm btn-outline-primary">Apri</a>
+    </li>
+  {% else %}
+    <li class="list-group-item">Non sei in alcun gruppo.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

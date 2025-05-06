@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Cerca</h2>
+
+<form method="post" class="row g-2 align-items-center mb-4">
+  <div class="col-auto">
+    <input type="text" name="q" class="form-control" placeholder="Parola chiave…" value="{{ q }}">
+  </div>
+  <div class="col-auto">
+    <select name="mode" class="form-select">
+      <option value="all"    {% if mode=='all'   %}selected{% endif %}>Utenti e Gruppi</option>
+      <option value="users"  {% if mode=='users' %}selected{% endif %}>Solo Utenti</option>
+      <option value="groups" {% if mode=='groups'%}selected{% endif %}>Solo Gruppi</option>
+    </select>
+  </div>
+  <div class="col-auto">
+    <button type="submit" class="btn btn-primary">Cerca</button>
+  </div>
+</form>
+
+{% if q %}
+  <h5>Risultati per “{{ q }}”</h5>
+
+  {% if users %}
+    <h6>Utenti</h6>
+    <ul class="list-group mb-3">
+      {% for u in users %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong>@{{ u.Nickname }}</strong>
+            {% if u.Nome %}<br><small>{{ u.Nome }}</small>{% endif %}
+          </div>
+          <a href="{{ url_for('profile', user_id=u.ID_Utente) }}"
+            class="btn btn-sm btn-outline-primary">Apri</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% if groups %}
+    <h6>Gruppi</h6>
+    <ul class="list-group mb-3">
+      {% for g in groups %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong>{{ g.Nome }}</strong><br>
+            <small>{{ g.Descrizione }}</small>
+          </div>
+          <a href="{{ url_for('group_detail', group_id=g.ID_Gruppo) }}"
+             class="btn btn-sm btn-outline-primary">Apri</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% if not users and not groups %}
+    <p class="text-muted">Nessun risultato trovato.</p>
+  {% endif %}
+{% endif %}
+{% endblock %}

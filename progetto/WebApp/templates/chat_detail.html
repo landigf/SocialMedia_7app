@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block content %}
+<h4>{{ header }}</h4>
+
+<div id="chat-window"
+     class="border rounded p-3 mb-3 overflow-auto"
+     style="height:60vh;">  {# 60 % viewport, puoi regolarlo #}
+
+  {% for m in msgs %}
+    <div class="mb-2 {% if m.Sender==uid %}text-end{% endif %}">
+      <small class="text-muted">{{ m.Data_ora }}</small><br>
+      <span class="badge bg-{% if m.Sender==uid %}primary{% else %}secondary{% endif %}">
+        {{ m.Nick if m.Sender!=uid else 'Tu' }}
+      </span>
+      <span class="ms-1">{{ m.Contenuto }}</span>
+    </div>
+  {% endfor %}
+</div>
+
+<form method="post" class="d-flex">
+  <input type="text" name="text" class="form-control me-2" placeholder="Scrivi…" required>
+  <button class="btn btn-success">Invia</button>
+</form>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // porta lo scroll in fondo quando la pagina è pronta
+  document.addEventListener("DOMContentLoaded", function () {
+      const chatWin = document.getElementById("chat-window");
+      chatWin.scrollTop = chatWin.scrollHeight;
+  });
+</script>
+{% endblock %}

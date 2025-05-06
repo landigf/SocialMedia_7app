@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Post di @{{ post.Nickname }}</h2>
+<p>{{ post.Contenuto }}</p>
+<small class="text-muted">{{ post.Data_ora }}</small>
+<hr>
+<h5>Commenti</h5>
+{% for c in comments %}
+    <div class="mb-2">
+        <strong>@{{ c.Nickname }}</strong> – {{ c.Data_ora }}<br>
+        {{ c.Contenuto }}
+    </div>
+{% else %}
+    <p>Nessun commento.</p>
+{% endfor %}
+<hr>
+<form method="post">
+    <div class="input-group">
+        <input type="text" class="form-control" name="comment" placeholder="Aggiungi un commento…" required>
+        <button class="btn btn-outline-secondary" type="submit">Invia</button>
+    </div>
+</form>
+{% endblock %}
