@@ -1,12 +1,14 @@
 from datetime import datetime, timedelta
 
+from operazioni.notifiche import crea_notifica
+
 def feed(conn, sessione):
     cursor = conn.cursor(dictionary=True)
     print(f"\n📲 Ecco il feed per @{sessione['username']}")
     sessione['post_id_map'] = {}
 
     try:
-        query = "SELECT * FROM SmartFeed_V WHERE ID_Utente = %s ORDER BY PunteggioFinale DESC"
+        query = "SELECT * FROM SmartFeed_V WHERE ID_Utente = %s AND P.ID_Autore_fonte IS NULL ORDER BY PunteggioFinale DESC"
         cursor.execute(query, (sessione["ID_utente"],))
         posts = cursor.fetchall()
 
@@ -87,46 +89,18 @@ def feed(conn, sessione):
         cursor.close()
 
 
-
 def suggest_trending_posts(cursor, sessione):
     scelta = input("Vuoi vedere i post più popolari tra tutti gli utenti? (s/n): ").strip().lower()
     if scelta == 's':
         cursor.execute(
             """
-            SELECT 
-                P.ID_Autore,
-                P.Data_ora,
-                P.Contenuto,
-                UA.Nickname AS NicknameAutore,
-                UA.Foto_profilo AS FotoProfiloAutore,
-
-                IFNULL(E.NumReazioni, 0) AS NumReazioni,
-                IFNULL(E.NumCommenti, 0) AS NumCommenti,
-
-                SUM(SF.PunteggioFinale) AS PunteggioTotale
-
-            FROM SmartFeed_V SF
-            JOIN POST P ON SF.ID_Autore = P.ID_Autore AND SF.Data_ora = P.Data_ora
-            JOIN UTENTE UA ON UA.ID_Utente = P.ID_Autore
-
-            LEFT JOIN Post_Engagement_V E 
-                ON E.ID_Autore = P.ID_Autore AND E.Data_ora = P.Data_ora
-
-            WHERE NOT EXISTS (
-                SELECT 1 FROM Interazioni I
-                WHERE I.ID_Utente = %s 
-                AND I.ID_Autore = P.ID_Autore 
-                AND I.Data_ora = P.Data_ora
-                AND I.Tipo_interazione = 'view'
-            )
-            AND P.ID_Autore != %s
-
-            GROUP BY P.ID_Autore, P.Data_ora
-            ORDER BY PunteggioTotale DESC
+            SELECT *
+            FROM SmartFeed_V
+            WHERE ID_Utente = %s
+            ORDER BY PunteggioFinale DESC
             LIMIT 10
-
             """,
-            (sessione["ID_utente"], sessione["ID_utente"])
+            (sessione["ID_utente"],)
         )
         posts = cursor.fetchall()
         if not posts:
@@ -136,9 +110,6 @@ def suggest_trending_posts(cursor, sessione):
         return posts
     else:
         return
-
-
-
 
 
 def show_post(conn, id_autore, data_ora, sessione):
@@ -232,6 +203,13 @@ def react_post(conn, post_id_map, sessione):
         )
         conn.commit()
         print("✅ Reazione salvata.")
+        id_autore, _ = post_id_map[post_scelto]
+        crea_notifica(
+            conn,
+            id_autore,
+            'reazione',
+            f"@{sessione['username']} ha reagito al tuo post."
+        )
         return post_id_map[post_scelto]
     except Exception as e:
         print("❌ Errore durante l'inserimento della reazione:", e)
@@ -257,6 +235,12 @@ def comment_post(conn, post_id_map, sessione):
         )
         conn.commit()
         print("✅ Commento pubblicato.")
+        crea_notifica(
+            conn,
+            id_autore,
+            'commento',
+            f"@{sessione['username']} ha commentato il tuo post."
+        )
         return id_autore, data_ora
     except Exception as e:
         print("❌ Errore durante l'inserimento del commento:", e)

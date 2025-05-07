@@ -1,0 +1,92 @@
+{% extends "layout.html" %}
+{% block content %}
+{% if is_own %}
+  <h2>Il mio profilo</h2>
+{% else %}
+  <h2>Profilo di @{{ user.Nickname }}</h2>
+{% endif %}
+
+{% if not is_own %}
+  <form action="{{ url_for('follow' if not is_following else 'unfollow',
+                           user_id=request.args.get('user_id', user.ID_Utente)) }}"
+        method="post" class="mb-3">
+
+    <button class="btn btn-{{ 'secondary' if is_following else 'primary' }}">
+      {{ 'Seguito' if is_following else 'Segui' }}
+    </button>
+
+  </form>
+{% endif %}
+
+
+
+<p><strong>Nickname:</strong> {{ user.Nickname }}</p>
+<p><strong>Nome:</strong> {{ user.Nome }}</p>
+<p><strong>Data di nascita:</strong> {{ user.DataDiNascita }}</p>
+<p><strong>Genere:</strong> {{ user.Genere }}</p>
+<p><strong>Pronomi:</strong> {{ user.Pronomi }}</p>
+<p><strong>Biografia:</strong> {{ user.Bio or '—' }}</p>
+{% if user.Link %}
+  <p><strong>Link:</strong> <a href="{{ user.Link }}">{{ user.Link }}</a></p>
+{% endif %}
+<p><strong>Post pubblicati:</strong> {{ post_count }}</p>
+
+{% if is_own %}
+    <h3>I miei post</h3>
+{% else %}
+    <h3>Post pubblicati</h3>
+{% endif %}
+{% if posts %}
+  {% for p in posts %}
+    <div class="card mb-2">
+      <div class="card-body">
+        <p class="card-text">{{ p.Contenuto }}</p>
+        <a href="{{ url_for('post_detail',
+                             id_autore=p.ID_Autore,
+                             data_ora=p.Data_ora) }}"
+           class="btn btn-sm btn-outline-primary">
+          Apri
+        </a>
+      </div>
+      <div class="card-footer text-muted">
+        {{ p.Data_ora }}
+      </div>
+    </div>
+  {% endfor %}
+{% else %}
+    {% if is_own %}
+        <p>Non hai ancora pubblicato post.</p>
+    {% else %}
+        <p>@{{ user.Nickname }} non ha ancora pubblicato post.</p>
+    {% endif %}
+{% endif %}
+
+{% if is_own %}
+  <h3>Seguiti</h3>
+  {% if following %}
+    <ul class="list-group mb-3">
+      {% for f in following %}
+        <li class="list-group-item">
+          <a href="{{ url_for('profile', user_id=f.ID_Utente) }}">@{{ f.Nickname }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="text-muted">Non stai ancora seguendo nessuno.</p>
+  {% endif %}
+
+  <h3>Amici (follow reciproco)</h3>
+  {% if friends %}
+    <ul class="list-group mb-3">
+      {% for fr in friends %}
+        <li class="list-group-item">
+          <a href="{{ url_for('profile', user_id=fr.ID_Utente) }}">@{{ fr.Nickname }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="text-muted">Nessun amico al momento.</p>
+  {% endif %}
+{% endif %}
+
+{% endblock %}

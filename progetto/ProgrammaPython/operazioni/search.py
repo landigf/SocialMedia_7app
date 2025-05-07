@@ -1,3 +1,6 @@
+import mysql.connector
+from operazioni.notifiche import crea_notifica
+
 def search_users(conn, sessione):
     cursor = conn.cursor(dictionary=True)
     try:
@@ -30,13 +33,22 @@ def follow_user(conn, sessione):
     cursor = conn.cursor()
     try:
         id_target = int(input("Inserisci l'ID dell'utente da seguire: "))
-        cursor.execute("""
+        cursor.execute(
+            """
             INSERT INTO FOLLOW (ID_Sender, ID_Followed, Data_ora)
             VALUES (%s, %s, NOW())
             ON DUPLICATE KEY UPDATE Data_ora = NOW()
-        """, (sessione["ID_utente"], id_target))
+            """,
+            (sessione["ID_utente"], id_target)
+        )
         conn.commit()
         print("✅ Ora segui questo utente.")
+        crea_notifica(
+            conn,
+            id_target,
+            'follow',
+            f"@{sessione['username']} ha iniziato a seguirti. {sessione['ID_utente']}"
+        )
     except Exception as e:
         print("❌ Errore durante il follow:", e)
     finally:
@@ -83,5 +95,31 @@ def join_group(conn, sessione):
         print("✅ Ti sei unito al gruppo.")
     except Exception as e:
         print("❌ Errore durante l’unione al gruppo:", e)
+    finally:
+        cursor.close()
+
+
+def cerca_utenti(conn, ID_utente_corrente, termine_ricerca):
+    """
+    Cerca utenti per nickname simile a termine_ricerca.
+    Ritorna una lista di dict con ID_Utente, Nickname, StatoAmicizia.
+    """
+    cursor = conn.cursor(dictionary=True)
+    try:
+        query = """
+            SELECT u.ID_Utente, u.Nickname,
+                   CASE WHEN f.ID_Sender IS NOT NULL THEN '✅ Amico' ELSE '❌ Non amico' END AS StatoAmicizia
+            FROM utente u
+            LEFT JOIN follow f ON f.ID_Sender = %s AND f.ID_Followed = u.ID_Utente
+            WHERE u.Nickname LIKE %s AND u.ID_Utente != %s
+            ORDER BY u.Nickname
+            LIMIT 10
+        """
+        cursor.execute(query, (ID_utente_corrente, f"%{termine_ricerca}%", ID_utente_corrente))
+        risultati = cursor.fetchall()
+        return risultati
+    except mysql.connector.Error as err:
+        print(f"❌ Errore nella ricerca utenti: {err}")
+        return []
     finally:
         cursor.close()

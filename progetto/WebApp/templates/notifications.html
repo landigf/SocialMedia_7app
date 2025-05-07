@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Notifiche</h2>
+
+{% if notifs %}
+  <ul class="list-group">
+    {% for n in notifs %}
+    <li class="list-group-item {% if not n.Letta %}list-group-item-warning{% endif %}">
+      <a class="text-decoration-none"
+         href="{{ url_for('open_notification', notif_id=n.ID_Notifica) }}">
+         <strong>{{ n.Tipo|capitalize }}</strong> – {{ n.Messaggio }}
+      </a>
+      <span class="badge bg-secondary rounded-pill">{{ n.Data_ora }}</span>
+    </li>    
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>Non hai notifiche.</p>
+{% endif %}
+{% endblock %}
