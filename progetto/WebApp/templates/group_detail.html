@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>{{ group.Nome }}</h2>
+<p>{{ group.Descrizione }}</p>
+<p><strong>Membri:</strong> {{ group.Membri }}</p>
+
+{% if is_member %}
+  <form method="post" class="mb-3">
+    <input type="hidden" name="action" value="leave">
+    <button class="btn btn-secondary">Lascia gruppo</button>
+  </form>
+{% else %}
+  <form method="post" class="mb-3">
+    <input type="hidden" name="action" value="join">
+    <button class="btn btn-primary">Unisciti</button>
+  </form>
+{% endif %}
+
+{% if is_member %}
+  <a class="btn btn-outline-success"
+     href="{{ url_for('chat_detail', chat_type='group', chat_id=group_id) }}">
+     Vai alla chat del gruppo
+  </a>
+{% endif %}
+{% endblock %}

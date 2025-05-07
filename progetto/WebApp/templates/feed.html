@@ -42,30 +42,28 @@
 {# Se non ci sono post, mostra un messaggio e un pulsante per visualizzare i post popolari #}
 {# ---------- footer feed: refresh & trending ---------- #}
 {% if posts %}
-    {# 1 – ci sono post in lista #}
     {% if trending %}
         <!-- Torna al feed personalizzato -->
         <a href="{{ url_for('feed') }}" class="btn btn-secondary w-100 mt-3">
             ↩︎ Torna al tuo feed
         </a>
     {% else %}
-        <!-- Aggiorna il feed personale -->
-        <a href="{{ url_for('feed') }}" class="btn btn-secondary w-100 mt-3">
-            ↻ Aggiorna feed
+        <!-- Finito il feed degli amici: offri post suggeriti -->
+        <p class="mt-3 text-muted">Sono finiti i post dei tuoi amici.</p>
+        <a href="{{ url_for('feed', trending='yes') }}"
+           class="btn btn-outline-primary w-100">
+            Mostra nuovi post suggeriti 🔥
         </a>
     {% endif %}
 {% else %}
-    {# 2 – nessun post #}
-    <p class="mt-4">Non ci sono altri post dai tuoi seguiti.</p>
-
+    {# nessun post mostrato #}
     {% if not trending %}
-        <!-- Offri i post popolari solo se non siamo già in modalità trending -->
+        <p class="mt-4">Non ci sono post dai tuoi amici.</p>
         <a href="{{ url_for('feed', trending='yes') }}" class="btn btn-outline-primary">
             Mostra i post più popolari 🔥
         </a>
     {% else %}
-        <!-- Siamo in trending ma comunque vuoto -->
-        <p class="text-muted">Nessun post popolare disponibile al momento.</p>
+        <p class="text-muted mt-4">Nessun post popolare disponibile al momento.</p>
     {% endif %}
 {% endif %}
 {# ---------- fine footer feed ---------- #}

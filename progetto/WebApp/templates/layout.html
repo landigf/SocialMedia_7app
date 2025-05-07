@@ -25,9 +25,21 @@
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('feed') }}">Feed</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('create_post') }}">Nuovo post</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('search') }}">Cerca</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('notifications') }}">Notifiche</a></li>
+                    <li class="nav-item">
+                      <a class="nav-link d-inline-flex align-items-center position-relative"
+                         href="{{ url_for('notifications') }}">
+                        Notifiche
+                        {% if unread_notif %}
+                          <span class="badge bg-danger rounded-pill ms-1"
+                                style="width:.6rem; height:.6rem; padding:0; border:2px solid var(--bs-body-bg);">
+                            <span class="visually-hidden">Nuove notifiche</span>
+                          </span>
+                        {% endif %}
+                      </a>
+                    </li>                    
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('profile') }}">Profilo</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('chats') }}">Messaggi</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('group_create') }}">Nuovo gruppo</a></li>
                 {% endif %}
                 </ul>
                 {% if session.get('user_id') %}

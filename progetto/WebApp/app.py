@@ -46,20 +46,42 @@ def login():
 def register():
     if request.method == "POST":
         nickname = request.form["nickname"].strip()
-        email = request.form["email"].strip()
+        email    = request.form["email"].strip()
         password = request.form["password"].strip()
+
         conn = get_db_connection()
-        cur = conn.cursor()
+        cur  = conn.cursor()
+
         try:
-            cur.callproc("sp_register_user", (nickname, email, password))
+            # 1. crea l'utente (altri campi NULL per ora)
+            cur.execute("""
+                INSERT INTO UTENTE
+                      (Nickname, Nome, Data_di_nascita, Genere, Pronomi, Biografia, Link)
+                VALUES (%s,       NULL, NULL,          NULL,  NULL,   NULL,     NULL)
+            """, (nickname,))
+
+            id_utente = cur.lastrowid
+
+            # 2. credenziali
+            cur.execute("""
+                INSERT INTO UTENTE_CREDENZIALI
+                      (ID_Utente, E_mail, Pass)
+                VALUES (%s,        %s,     SHA2(%s, 256))
+            """, (id_utente, email, password))
+
             conn.commit()
             flash("Registrazione riuscita! Ora effettua il login.", "success")
             return redirect(url_for("login"))
+
         except mysql.connector.Error as e:
-            flash(f"Errore: {e.msg}", "danger")
+            conn.rollback()
+            flash(f"Errore MySQL: {e.msg}", "danger")
+
         finally:
             conn.close()
+
     return render_template("register.html")
+
 
 @app.route("/logout")
 def logout():
@@ -75,6 +97,20 @@ def feed():
 
     uid      = session["user_id"]
     trending = request.args.get("trending") == "yes"
+
+    # Se si passa a trending e ho un feed precedente, registro le view
+    if trending and session.get("last_feed_posts"):
+        conn_tmp = get_db_connection()
+        cur_tmp  = conn_tmp.cursor()
+        cur_tmp.executemany("""
+            INSERT IGNORE INTO Interazioni
+                (ID_Utente, ID_Autore, Data_ora, Tipo_interazione)
+            VALUES (%s,        %s,        %s,       'view')
+        """, [(uid, a, d) for a, d in session["last_feed_posts"]])
+        conn_tmp.commit()
+        cur_tmp.close()
+        conn_tmp.close()
+        session.pop("last_feed_posts", None)   # pulisco
 
     commonsql = """
         SELECT
@@ -131,6 +167,9 @@ def feed():
     cur  = conn.cursor(dictionary=True)
     cur.execute(sql, params)
     posts = cur.fetchall()
+    # Salvo in session l’elenco dei post del feed corrente
+    session["last_feed_posts"] = [(p["ID_Autore"], str(p["Data_ora"])) for p in posts]
+
 
     # -------- registra "view" per ogni post mostrato --------
     '''view_rows = [(uid, p["ID_Autore"], p["Data_ora"]) for p in posts]
@@ -264,7 +303,6 @@ def react():
             """,
             (uid, id_autore, data_ora, id_reaz)
         )
-        conn.commit()
 
         # 3) Notifico l'autore
         create_notification(
@@ -292,6 +330,13 @@ def react():
         for r in rows:
             counts[str(r["ID_Reazione"])] = r["cnt"]
 
+        # Segna la view (se non già presente)
+        cur.execute("""
+            INSERT IGNORE INTO Interazioni
+                (ID_Utente, ID_Autore, Data_ora, Tipo_interazione)
+            VALUES (%s,        %s,        %s,       'view')
+        """, (uid, id_autore, data_ora))
+        conn.commit()
         return jsonify(ok=True, counts=counts, myReaction=id_reaz)
 
     except Exception as e:
@@ -403,12 +448,51 @@ def profile():
     """, (target_id,))
     posts = cur.fetchall()
 
+    
+    # is_following (solo se non è il proprio profilo)
+    if not is_own:
+        cur.execute("""
+            SELECT 1 FROM FOLLOW
+            WHERE ID_Sender=%s AND ID_Followed=%s
+        """, (session["user_id"], target_id))
+        is_following = cur.fetchone() is not None
+    else:
+        is_following = None
+
+
+    # se è il tuo profilo: lista following e amici
+    following = friends = []
+    if is_own:
+        cur.execute("""
+            SELECT U.ID_Utente, U.Nickname
+            FROM FOLLOW F
+            JOIN UTENTE U ON U.ID_Utente = F.ID_Followed
+            WHERE F.ID_Sender = %s
+            ORDER BY U.Nickname
+        """, (session["user_id"],))
+        following = cur.fetchall()
+
+        cur.execute("""
+            SELECT U.ID_Utente, U.Nickname
+            FROM FOLLOW F1
+            JOIN FOLLOW F2 ON F2.ID_Sender = F1.ID_Followed
+                        AND F2.ID_Followed = F1.ID_Sender
+            JOIN UTENTE U ON U.ID_Utente = F1.ID_Followed
+            WHERE F1.ID_Sender = %s
+            ORDER BY U.Nickname
+        """, (session["user_id"],))
+        friends = cur.fetchall()
+
     conn.close()
     return render_template("profile.html",
-                           user=user,
-                           post_count=post_count,
-                           posts=posts,
-                           is_own=is_own)
+                        user=user,
+                        post_count=post_count,
+                        posts=posts,
+                        is_own=is_own,
+                        is_following=is_following,
+                        following=following,
+                        friends=friends)
+
 
 
 @app.route("/user/<int:user_id>")
@@ -491,24 +575,43 @@ def open_notification(notif_id):
     cur  = conn.cursor(dictionary=True)
 
     cur.execute("""
-        SELECT ID_Autore_post, Data_ora_post
+        SELECT Tipo, ID_Autore_post, Data_ora_post
         FROM NOTIFICA
-        WHERE ID_Notifica   = %s
-          AND ID_Destinatario = %s
-        """, (notif_id, session["user_id"]))
-    row = cur.fetchone()
+        WHERE ID_Notifica=%s AND ID_Destinatario=%s
+    """, (notif_id, session["user_id"]))
+    n = cur.fetchone()
 
-    if row:
-        # segna come letta
-        cur.execute("UPDATE NOTIFICA SET Letta = 1 WHERE ID_Notifica = %s", (notif_id,))
-        conn.commit()
+    if not n:
         conn.close()
-        # vai al post
-        return redirect(url_for("post_detail",
-                                id_autore=row["ID_Autore_post"],
-                                data_ora=row["Data_ora_post"]))
+        return redirect(url_for("notifications"))
+
+    # segna come letta
+    cur.execute("UPDATE NOTIFICA SET Letta=1 WHERE ID_Notifica=%s", (notif_id,))
+    conn.commit()
     conn.close()
-    return redirect(url_for("notifications"))
+
+    # instrada secondo il tipo
+    if n["Tipo"] == "post":
+        return redirect(url_for("post_detail",
+                                id_autore=n["ID_Autore_post"],
+                                data_ora=n["Data_ora_post"]))
+    elif n["Tipo"] == "follow":
+        return redirect(url_for("profile", user_id=n["ID_Autore_post"]))
+    elif n["Tipo"] == "message" and n["ID_Autore_post"]:
+        # se esiste in GRUPPO → chat di gruppo, altrimenti DM
+        conn_chk = get_db_connection()
+        cur_chk  = conn_chk.cursor()
+        cur_chk.execute("SELECT 1 FROM gruppo WHERE ID_Gruppo=%s",
+                        (n["ID_Autore_post"],))
+        is_group = cur_chk.fetchone() is not None
+        cur_chk.close()
+        conn_chk.close()
+
+        return redirect(url_for("chat_detail",
+                                chat_type="group" if is_group else "user",
+                                chat_id=n["ID_Autore_post"]))
+
+
 
 # ---------- CHAT LIST ----------
 @app.route("/chats")
@@ -575,7 +678,7 @@ def chat_detail(chat_type, chat_id):
                 cur_msg.execute("""
                     INSERT INTO messaggio_di_gruppo
                           (ID_Sender, ID_Gruppo, Data_ora, Contenuto)
-                    VALUES (%s,        %s,        NOW(),   %s)
+                    VALUES (%s, %s, NOW(), %s)
                 """, (uid, chat_id, text))
 
                 # notifica agli altri membri
@@ -585,8 +688,13 @@ def chat_detail(chat_type, chat_id):
                     WHERE ID_Gruppo=%s AND ID_Utente!=%s
                 """, (chat_id, uid))
                 for row in cur_hdr.fetchall():
-                    create_notification(conn, row["ID_Utente"], "message",
-                                        f"@{session['nickname']} ha scritto nel gruppo {chat_id}.")
+                    create_notification(
+                        conn,
+                        destinatario_id=row["ID_Utente"],   # (nel loop dei membri)
+                        tipo="message",
+                        messaggio=f"@{session['nickname']} ha scritto nel gruppo {chat_id}.",
+                        id_target=chat_id                   # ID del gruppo
+                    )
             else:
                 cur_msg.execute("""
                     INSERT INTO messaggio_individuale
@@ -594,7 +702,8 @@ def chat_detail(chat_type, chat_id):
                     VALUES (%s,        %s,          NOW(),   %s)
                 """, (uid, chat_id, text))
                 create_notification(conn, chat_id, "message",
-                                    f"@{session['nickname']} ti ha inviato un messaggio.")
+                            f"@{session['nickname']} ti ha inviato un messaggio.",
+                            id_target=uid)
 
             conn.commit()
             return redirect(request.url)
@@ -650,7 +759,166 @@ def chat_detail(chat_type, chat_id):
                            msgs=messages,
                            uid=uid)
 
+# ---------- FOLLOW ----------
+@app.route("/follow/<int:user_id>", methods=["POST"])
+def follow(user_id):
+    if not session.get("user_id"):
+        return redirect(url_for("login"))
+    uid  = session["user_id"]
+    if uid == user_id:
+        return redirect(url_for("profile", user_id=user_id))
 
+    conn = get_db_connection()
+    cur  = conn.cursor()
+    try:
+        cur.execute("""
+            INSERT IGNORE INTO FOLLOW (ID_Sender, ID_Followed, Data_ora)
+            VALUES (%s, %s, NOW())
+        """, (uid, user_id))
+        conn.commit()
+        create_notification(conn, user_id, "follow",
+                    f"@{session['nickname']} ha iniziato a seguirti.",
+                    id_target=uid)
+
+    finally:
+        cur.close()
+        conn.close()
+    return redirect(request.referrer or url_for("profile", user_id=user_id))
+
+# ---------- UNFOLLOW ----------
+@app.route("/unfollow/<int:user_id>", methods=["POST"])
+def unfollow(user_id):
+    if not session.get("user_id"):
+        return redirect(url_for("login"))
+    uid = session["user_id"]
+    conn = get_db_connection()
+    cur  = conn.cursor()
+    try:
+        cur.execute("""
+            DELETE FROM FOLLOW
+            WHERE ID_Sender=%s AND ID_Followed=%s
+        """, (uid, user_id))
+        conn.commit()
+    finally:
+        cur.close()
+        conn.close()
+    return redirect(request.referrer or url_for("profile", user_id=user_id))
+
+# ---------- GROUP DETAIL ----------
+@app.route("/group/<int:group_id>", methods=["GET", "POST"])
+def group_detail(group_id):
+    if not session.get("user_id"):
+        return redirect(url_for("login"))
+
+    uid  = session["user_id"]
+    conn = get_db_connection()
+    cur  = conn.cursor(dictionary=True)
+
+    # --- dati gruppo + numero membri ---
+    cur.execute("""
+        SELECT g.Nome, g.Descrizione, g.Foto_gruppo,
+               COUNT(ghu.ID_Utente) AS Membri
+        FROM gruppo g
+        LEFT JOIN gruppo_has_utente ghu ON ghu.ID_Gruppo = g.ID_Gruppo
+        WHERE g.ID_Gruppo = %s
+        GROUP BY g.ID_Gruppo
+    """, (group_id,))
+    group = cur.fetchone()
+    if not group:
+        conn.close()
+        abort(404)
+
+    # --- sei già membro? sei admin? ---
+    cur.execute("""
+        SELECT Amministratore
+        FROM gruppo_has_utente
+        WHERE ID_Gruppo=%s AND ID_Utente=%s
+    """, (group_id, uid))
+    row = cur.fetchone()
+    is_member = row is not None
+    is_admin  = row["Amministratore"] == 1 if row else False
+
+    # --- join / leave richiesto via POST ---
+    if request.method == "POST":
+        action = request.form.get("action")
+        if action == "join" and not is_member:
+            cur.execute("""
+                INSERT INTO gruppo_has_utente
+                      (ID_Gruppo, ID_Utente, Amministratore)
+                VALUES (%s,        %s,        0)
+            """, (group_id, uid))
+            conn.commit()
+            is_member = True
+        elif action == "leave" and is_member:
+            cur.execute("""
+                DELETE FROM gruppo_has_utente
+                WHERE ID_Gruppo=%s AND ID_Utente=%s
+            """, (group_id, uid))
+            conn.commit()
+            is_member = False
+            is_admin  = False
+        return redirect(request.url)      # ricarica la pagina
+
+    conn.close()
+    return render_template("group_detail.html",
+                           group=group,
+                           group_id=group_id,
+                           is_member=is_member,
+                           is_admin=is_admin)
+
+# ---------- GROUP CREATE ----------
+@app.route("/group/create", methods=["GET", "POST"])
+def group_create():
+    if not session.get("user_id"):
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+        name = request.form["name"].strip()
+        descr = request.form["descr"].strip()
+        photo = request.form["photo"].strip() or None
+
+        conn = get_db_connection()
+        cur  = conn.cursor()
+        try:
+            cur.execute("""
+                INSERT INTO gruppo (Nome, Descrizione, Foto_gruppo)
+                VALUES (%s, %s, %s)
+            """, (name, descr, photo))
+            gid = cur.lastrowid
+
+            cur.execute("""
+                INSERT INTO gruppo_has_utente
+                      (ID_Gruppo, ID_Utente, Amministratore)
+                VALUES (%s,        %s,        1)
+            """, (gid, session["user_id"]))
+            conn.commit()
+            flash("Gruppo creato con successo.", "success")
+            return redirect(url_for("group_detail", group_id=gid))
+        except mysql.connector.Error as e:
+            conn.rollback()
+            flash(f"Errore MySQL: {e.msg}", "danger")
+        finally:
+            conn.close()
+
+    return render_template("group_create.html")
+
+# ---------- UNREAD NOTIFICATIONS COUNT ----------
+@app.context_processor
+def inject_unread_notif():
+    """Rende disponibile {{ unread_notif }} in tutti i template."""
+    if "user_id" not in session:
+        return dict(unread_notif=0)
+
+    conn = get_db_connection()
+    cur  = conn.cursor()
+    cur.execute("""
+        SELECT COUNT(*) FROM NOTIFICA
+        WHERE ID_Destinatario=%s AND Letta=0
+    """, (session["user_id"],))
+    count = cur.fetchone()[0]
+    cur.close()
+    conn.close()
+    return dict(unread_notif=count)
 
 if __name__ == "__main__":
     app.run(debug=True)

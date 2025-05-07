@@ -5,20 +5,13 @@
 {% if notifs %}
   <ul class="list-group">
     {% for n in notifs %}
-    <li class="list-group-item d-flex justify-content-between align-items-start
-            {% if not n.Letta %}list-group-item-warning{% endif %}">
-        {% if n.ID_Autore_post %}
-            <!-- notifica legata a un post -->
-            <a class="text-decoration-none"
-            href="{{ url_for('open_notification', notif_id=n.ID_Notifica) }}">
-            <strong>{{ n.Tipo|capitalize }}</strong> – {{ n.Messaggio }}
-            </a>
-        {% else %}
-            <!-- notifica generica -->
-            <span><strong>{{ n.Tipo|capitalize }}</strong> – {{ n.Messaggio }}</span>
-        {% endif %}
-        <span class="badge bg-secondary rounded-pill">{{ n.Data_ora }}</span>
-    </li>
+    <li class="list-group-item {% if not n.Letta %}list-group-item-warning{% endif %}">
+      <a class="text-decoration-none"
+         href="{{ url_for('open_notification', notif_id=n.ID_Notifica) }}">
+         <strong>{{ n.Tipo|capitalize }}</strong> – {{ n.Messaggio }}
+      </a>
+      <span class="badge bg-secondary rounded-pill">{{ n.Data_ora }}</span>
+    </li>    
     {% endfor %}
   </ul>
 {% else %}

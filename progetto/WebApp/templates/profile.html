@@ -6,6 +6,18 @@
   <h2>Profilo di @{{ user.Nickname }}</h2>
 {% endif %}
 
+{% if not is_own %}
+  <form action="{{ url_for('follow' if not is_following else 'unfollow',
+                           user_id=request.args.get('user_id', user.ID_Utente)) }}"
+        method="post" class="mb-3">
+
+    <button class="btn btn-{{ 'secondary' if is_following else 'primary' }}">
+      {{ 'Seguito' if is_following else 'Segui' }}
+    </button>
+
+  </form>
+{% endif %}
+
 
 
 <p><strong>Nickname:</strong> {{ user.Nickname }}</p>
@@ -47,6 +59,34 @@
     {% else %}
         <p>@{{ user.Nickname }} non ha ancora pubblicato post.</p>
     {% endif %}
+{% endif %}
+
+{% if is_own %}
+  <h3>Seguiti</h3>
+  {% if following %}
+    <ul class="list-group mb-3">
+      {% for f in following %}
+        <li class="list-group-item">
+          <a href="{{ url_for('profile', user_id=f.ID_Utente) }}">@{{ f.Nickname }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="text-muted">Non stai ancora seguendo nessuno.</p>
+  {% endif %}
+
+  <h3>Amici (follow reciproco)</h3>
+  {% if friends %}
+    <ul class="list-group mb-3">
+      {% for fr in friends %}
+        <li class="list-group-item">
+          <a href="{{ url_for('profile', user_id=fr.ID_Utente) }}">@{{ fr.Nickname }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="text-muted">Nessun amico al momento.</p>
+  {% endif %}
 {% endif %}
 
 {% endblock %}

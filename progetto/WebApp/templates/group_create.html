@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Crea un gruppo</h2>
+<form method="post" class="mb-3">
+  <div class="mb-2">
+    <label class="form-label">Nome</label>
+    <input type="text" name="name" class="form-control" required>
+  </div>
+  <div class="mb-2">
+    <label class="form-label">Descrizione</label>
+    <textarea name="descr" class="form-control" rows="3"></textarea>
+  </div>
+  <div class="mb-2">
+    <label class="form-label">URL foto (opzionale)</label>
+    <input type="url" name="photo" class="form-control">
+  </div>
+  <button class="btn btn-success">Crea</button>
+</form>
+{% endblock %}
