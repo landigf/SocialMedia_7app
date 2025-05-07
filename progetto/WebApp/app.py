@@ -826,7 +826,6 @@ def group_detail(group_id):
     group = cur.fetchone()
     if not group:
         conn.close()
-        abort(404)
 
     # --- sei già membro? sei admin? ---
     cur.execute("""
