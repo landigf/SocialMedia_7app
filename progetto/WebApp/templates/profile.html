@@ -17,6 +17,14 @@
 
   </form>
 {% endif %}
+{% if not is_own %}
+  <a class="btn btn-outline-success mb-3"
+     href="{{ url_for('chat_detail',
+                      chat_type='user',
+                      chat_id=request.args.get('user_id', user.ID_Utente)) }}">
+    ✉︎ Messaggia in privato
+  </a>
+{% endif %}
 
 
 

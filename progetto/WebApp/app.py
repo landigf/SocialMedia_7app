@@ -310,7 +310,7 @@ def react():
             destinatario_id=id_autore,
             tipo="reazione",
             messaggio=f"@{session['nickname']} ha reagito al tuo post.",
-            id_autore_post=id_autore,
+            id_target=id_autore,
             data_ora_post=data_ora
         )
 
@@ -597,6 +597,10 @@ def open_notification(notif_id):
                                 data_ora=n["Data_ora_post"]))
     elif n["Tipo"] == "follow":
         return redirect(url_for("profile", user_id=n["ID_Autore_post"]))
+    elif n["Tipo"] == "reazione":
+        return redirect(url_for("post_detail",
+                                id_autore=n["ID_Autore_post"],
+                                data_ora=n["Data_ora_post"]))
     elif n["Tipo"] == "message" and n["ID_Autore_post"]:
         # se esiste in GRUPPO → chat di gruppo, altrimenti DM
         conn_chk = get_db_connection()
@@ -610,6 +614,8 @@ def open_notification(notif_id):
         return redirect(url_for("chat_detail",
                                 chat_type="group" if is_group else "user",
                                 chat_id=n["ID_Autore_post"]))
+    
+    return redirect(url_for("notifications"))
 
 
 
@@ -758,6 +764,41 @@ def chat_detail(chat_type, chat_id):
                            chat_id=chat_id,
                            msgs=messages,
                            uid=uid)
+
+# ---------- CHAT NEW ----------
+@app.route("/chat/new", methods=["GET", "POST"])
+def chat_new():
+    if not session.get("user_id"):
+        return redirect(url_for("login"))
+
+    uid  = session["user_id"]
+    conn = get_db_connection()
+    cur  = conn.cursor(dictionary=True)
+
+    # elenco “Amici” (follow reciproco)
+    cur.execute("""
+        SELECT U.ID_Utente, U.Nickname
+        FROM FOLLOW F1
+        JOIN FOLLOW F2 ON F2.ID_Sender = F1.ID_Followed
+                     AND F2.ID_Followed = F1.ID_Sender
+        JOIN UTENTE U ON U.ID_Utente = F1.ID_Followed
+        WHERE F1.ID_Sender = %s
+        ORDER BY U.Nickname
+    """, (uid,))
+    friends = cur.fetchall()
+
+    if request.method == "POST":
+        sel = request.form.get("friend_id", type=int)
+        conn.close()
+        if sel:
+            # reindirizza subito alla chat (creata in INSERT ON DUPLICATE?)
+            return redirect(url_for("chat_detail",
+                                    chat_type="user",
+                                    chat_id=sel))
+        flash("Seleziona un amico.", "warning")
+
+    conn.close()
+    return render_template("chat_new.html", friends=friends)
 
 # ---------- FOLLOW ----------
 @app.route("/follow/<int:user_id>", methods=["POST"])
