@@ -27,9 +27,16 @@ The main project directory includes:
 - `Artefatti` subdirectory containing documentation (e.g., relational model, project description, exam info)
 - `progetto/` subdirectory containing a separate `README.md` with setup instructions and the Source Code for the web app and/or command-line utilities
 
+## ⚙️ Initial Configuration
+
+Before running the application, you must:
+
+1. Modify the `MODIFYME.py` file in the root directory with your database credentials.
+
 ## 🚀 Running the App Locally
 
 To run the application locally (via terminal or web interface):
 
 1. **Read the `README.md` file located in the `progetto/` directory.**
 2. Follow the instructions to set up the database and launch the system.
+
