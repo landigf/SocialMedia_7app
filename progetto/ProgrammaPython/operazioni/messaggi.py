@@ -201,10 +201,10 @@ def edit_last_message(conn, sessione, nuovo_contenuto):
     chat_id = sessione["ID_chat"]
     is_group = sessione.get("current_chat_type") == "group"
     if is_group:
-        query = """UPDATE messaggio_di_gruppo SET Contenuto = %s, Data_ora = NOW()
+        query = """UPDATE messaggio_di_gruppo SET Contenuto = %s
                    WHERE ID_Sender = %s AND ID_Gruppo = %s ORDER BY Data_ora DESC LIMIT 1"""
     else:
-        query = """UPDATE messaggio_individuale SET Contenuto = %s, Data_ora = NOW()
+        query = """UPDATE messaggio_individuale SET Contenuto = %s
                    WHERE ID_Sender = %s AND ID_Ricevente = %s ORDER BY Data_ora DESC LIMIT 1"""
     cursor = conn.cursor()
     cursor.execute(query, (nuovo_contenuto, ID_utente, chat_id))

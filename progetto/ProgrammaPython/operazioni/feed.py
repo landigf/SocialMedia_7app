@@ -8,8 +8,42 @@ def feed(conn, sessione):
     sessione['post_id_map'] = {}
 
     try:
-        query = "SELECT * FROM SmartFeed_V WHERE ID_Utente = %s AND P.ID_Autore_fonte IS NULL ORDER BY PunteggioFinale DESC"
-        cursor.execute(query, (sessione["ID_utente"],))
+        sql = """
+            SELECT 
+                P.ID_Autore,
+                P.Data_ora,
+                U.Nickname AS NicknameAutore,
+                P.Contenuto,
+                SUM(CASE WHEN FB.ID_Reazione=1 THEN 1 ELSE 0 END) AS R1,
+                SUM(CASE WHEN FB.ID_Reazione=2 THEN 1 ELSE 0 END) AS R2,
+                SUM(CASE WHEN FB.ID_Reazione=3 THEN 1 ELSE 0 END) AS R3, 
+                SUM(CASE WHEN FB.ID_Reazione=4 THEN 1 ELSE 0 END) AS R4,
+                SUM(CASE WHEN FB.ID_Reazione=5 THEN 1 ELSE 0 END) AS R5,
+                SUM(CASE WHEN FB.ID_Reazione=6 THEN 1 ELSE 0 END) AS R6,
+                MAX(CASE WHEN FB.ID_Utente = %(uid)s 
+                    THEN FB.ID_Reazione END) AS MyReaction,
+                MAX(V.PunteggioFinale) AS PunteggioFinale
+            FROM SmartFeed_V V
+            JOIN POST P ON P.ID_Autore = V.ID_Autore 
+                      AND P.Data_ora = V.Data_ora
+            JOIN UTENTE U ON U.ID_Utente = P.ID_Autore
+            LEFT JOIN FEEDBACK FB ON FB.ID_Autore = P.ID_Autore
+                                AND FB.Data_ora_post = P.Data_ora
+            WHERE P.ID_Autore_fonte IS NULL
+                AND V.ID_Utente = %(uid)s
+                AND NOT EXISTS (
+                    SELECT 1 
+                    FROM Interazioni I
+                    WHERE I.ID_Utente = %(uid)s
+                    AND I.ID_Autore = P.ID_Autore
+                    AND I.Data_ora = P.Data_ora
+                    AND I.Tipo_interazione = 'view'
+                )
+            GROUP BY P.ID_Autore, P.Data_ora, U.Nickname, P.Contenuto
+            ORDER BY PunteggioFinale DESC
+            LIMIT 20
+        """
+        cursor.execute(sql, {'uid': sessione["ID_utente"]})
         posts = cursor.fetchall()
 
         if not posts:
@@ -20,66 +54,37 @@ def feed(conn, sessione):
 
         for idx, post in enumerate(posts, start=1):
             tempo = tempo_trascorso(post["Data_ora"])
-
             print(f"\n📌 Post [{idx}] di @{post['NicknameAutore']} ({tempo})")
             print(f"📝 {post['Contenuto']}")
 
-            # Reazioni con emoji
-            cursor.execute(
-                """
-                SELECT R.ID_Reazione, R.Label, COUNT(*) AS Conteggio
-                FROM FEEDBACK F
-                JOIN REAZIONE R ON F.ID_Reazione = R.ID_Reazione
-                WHERE F.ID_Autore = %s AND F.Data_ora_post = %s
-                GROUP BY R.ID_Reazione, R.Label
-                """,
-                (post["ID_Autore"], post["Data_ora"])
-            )
-            reazioni = cursor.fetchall()
-            emoji_map = {
-                1: "👍", 2: "❤️", 3: "😂", 4: "😮", 5: "😢", 6: "😡"
-            }
+            # Mostra reazioni aggregate
             print("🎯 Reazioni:")
-            if not reazioni:
+            reactions = {
+                "👍": post["R1"], "❤️": post["R2"], "😂": post["R3"],
+                "😮": post["R4"], "😢": post["R5"], "😡": post["R6"]
+            }
+            has_reactions = False
+            for emoji, count in reactions.items():
+                if count:
+                    print(f"  {emoji}: {count}")
+                    has_reactions = True
+            if not has_reactions:
                 print("  Nessuna reazione.")
-            else:
-                for r in reazioni:
-                    emoji = emoji_map.get(r["ID_Reazione"], "❓")
-                    print(f"  {emoji} {r['Label']}: {r['Conteggio']}")
 
-            print(f"💬 Commenti totali: {post['NumCommenti']}")
-
-            # Mostra primo commento se presente
-            cursor.execute(
-                """
-                SELECT Contenuto, ID_Autore, Data_ora
-                FROM POST
-                WHERE ID_Autore_fonte = %s AND Data_ora_fonte = %s
-                ORDER BY Data_ora ASC
-                LIMIT 1
-                """,
-                (post["ID_Autore"], post["Data_ora"])
-            )
-            commento = cursor.fetchone()
-            if commento:
-                print(f"🗨️ Primo commento di ID {commento['ID_Autore']}: {commento['Contenuto']}")
-                if post["NumCommenti"] > 1:
-                    print("🔽 Altri commenti disponibili...")
-
-            # Mappa e registrazione visualizzazione
             sessione['post_id_map'][idx] = (post["ID_Autore"], post["Data_ora"])
 
-            cursor.execute(
-                """
-                INSERT INTO Interazioni (ID_Utente, ID_Autore, Data_ora, Tipo_interazione)
+        # Salviamo le visualizzazioni alla fine
+        view_rows = [(sessione["ID_utente"], p["ID_Autore"], p["Data_ora"]) 
+                    for p in posts]
+        if view_rows:
+            cursor.executemany("""
+                INSERT IGNORE INTO Interazioni
+                    (ID_Utente, ID_Autore, Data_ora, Tipo_interazione)
                 VALUES (%s, %s, %s, 'view')
-                """,
-                (sessione["ID_utente"], post["ID_Autore"], post["Data_ora"])
-            )
-            print("-" * 50)
+            """, view_rows)
+            conn.commit()
 
-        conn.commit()
-        print("\n✅ Visualizzazioni registrate con successo.")
+        print("\n✅ Feed caricato con successo.")
         return True
 
     except Exception as e:

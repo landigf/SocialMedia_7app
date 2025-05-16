@@ -85,6 +85,8 @@ Il database espone *view* come `SmartFeed_V` per il ranking dei post e *trigger*
 
 ## Setup passo‑passo
 
+### Per Linux/Mac
+
 ```bash
 # 1. Clona il repository
 $ git clone https://github.com/<org>/7app.git && cd 7app
@@ -98,15 +100,50 @@ $ pip install -r requirements.txt
 # 4. Crea il database e importa lo schema
 $ mysql -u root -p < sql/schema.sql
 
-# 5. (Opzionale) Popola dati dummy
+# 5. Popola dati dummy
 $ mysql -u root -p < sql/sample_data.sql
 ```
 
-## Avvio dell’applicazione
+### Per Windows
+
+```cmd
+# 1. Clona il repository
+> git clone https://github.com/<org>/7app.git
+> cd 7app
+
+# 2. Crea un venv
+> python -m venv venv
+> venv\Scripts\activate
+
+# 3. Installa le dipendenze
+> pip install -r requirements.txt
+
+# 4. Crea il database e importa lo schema
+> mysql -u root -p -e "source sql/schema.sql"
+
+# 5. (Opzionale) Popola dati dummy
+> mysql -u root -p -e "source sql/sample_data.sql"
+```
+
+### Configurazione connessione MySQL
+
+Prima di avviare l'applicazione, modifica il file `utility/connector.py` inserendo le tue credenziali MySQL:
+
+```python
+config = {
+  'user': 'root',
+  'password': 'your_password_here',
+  'host': 'localhost',
+  'database': 'seven_app',
+}
+```
+
+## Avvio dell'applicazione
 
 ```bash
 $ python menu.py
 ```
+
 
 All’avvio comparirà un menù numerato. Le opzioni si adattano automaticamente allo **stato corrente** (non loggato, loggato, in feed, ecc.)
 
