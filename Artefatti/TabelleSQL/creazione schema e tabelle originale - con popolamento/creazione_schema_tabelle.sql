@@ -1,0 +1,117 @@
+CREATE SCHEMA seven_app;
+USE seven_app;
+
+CREATE TABLE UTENTE (
+    ID_Utente INT AUTO_INCREMENT PRIMARY KEY,
+    Nickname VARCHAR(50) UNIQUE NOT NULL,
+    Nome VARCHAR(50),
+    Foto_profilo TEXT,
+    Data_di_nascita DATE,
+    Genere VARCHAR(15),
+    Pronomi VARCHAR(15),
+    Biografia TEXT,
+    Telefono VARCHAR(20),
+    Verificato BOOLEAN DEFAULT FALSE,
+    Link TEXT,
+    Contenuti_sensibili BOOLEAN DEFAULT FALSE
+    
+);
+
+CREATE TABLE UTENTE_CREDENZIALI (
+	ID_Utente INT PRIMARY KEY,
+    E_mail VARCHAR(50) UNIQUE NOT NULL,
+    Pass VARCHAR(255) NOT NULL,
+    FOREIGN KEY (ID_Utente) REFERENCES UTENTE(ID_Utente) ON DELETE CASCADE
+);
+
+CREATE TABLE FOLLOW (
+    ID_Sender INT,
+    ID_Followed INT,
+    Data_ora TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (ID_Sender, ID_Followed),
+    FOREIGN KEY (ID_Sender) REFERENCES UTENTE(ID_Utente) ON DELETE CASCADE,
+    FOREIGN KEY (ID_Followed) REFERENCES UTENTE(ID_Utente) ON DELETE CASCADE
+);
+
+CREATE TABLE GRUPPO (
+    ID_Gruppo INT AUTO_INCREMENT PRIMARY KEY,
+    Nome VARCHAR(100) NOT NULL,
+    Foto_gruppo TEXT,
+    Descrizione TEXT
+);
+
+CREATE TABLE GRUPPO_HAS_UTENTE (
+    ID_Gruppo INT,
+    ID_Utente INT,
+    Amministratore BOOLEAN DEFAULT FALSE,
+    PRIMARY KEY (ID_Gruppo, ID_Utente),
+    FOREIGN KEY (ID_Gruppo) REFERENCES GRUPPO(ID_Gruppo) ON DELETE CASCADE,
+    FOREIGN KEY (ID_Utente) REFERENCES UTENTE(ID_Utente) ON DELETE CASCADE
+);
+
+CREATE TABLE MESSAGGIO_DI_GRUPPO (
+    ID_Sender INT,
+    ID_Gruppo INT,
+    Data_ora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Contenuto TEXT NOT NULL,
+    PRIMARY KEY (ID_Sender, ID_Gruppo, Data_ora),
+    FOREIGN KEY (ID_Sender) REFERENCES UTENTE(ID_Utente) ON DELETE CASCADE,
+    FOREIGN KEY (ID_Gruppo) REFERENCES GRUPPO(ID_Gruppo) ON DELETE CASCADE
+);
+
+CREATE TABLE MESSAGGIO_INDIVIDUALE (
+    ID_Sender INT,
+    ID_Ricevente INT,
+    Data_ora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Contenuto TEXT NOT NULL,
+    PRIMARY KEY (ID_Sender, ID_Ricevente, Data_ora),
+    FOREIGN KEY (ID_Sender) REFERENCES UTENTE(ID_Utente) ON DELETE CASCADE,
+    FOREIGN KEY (ID_Ricevente) REFERENCES UTENTE(ID_Utente) ON DELETE CASCADE
+);
+
+CREATE TABLE POST (
+    ID_Autore INT,
+    Data_ora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ID_Autore_fonte INT,
+    Data_ora_fonte TIMESTAMP,
+    Contenuto TEXT NOT NULL,
+    Sensibile BOOLEAN DEFAULT FALSE,
+    Modificato BOOLEAN DEFAULT FALSE,
+    PRIMARY KEY (ID_Autore, Data_ora),
+    FOREIGN KEY (ID_Autore) REFERENCES UTENTE(ID_Utente) ON DELETE CASCADE,
+    FOREIGN KEY (ID_Autore_fonte, Data_ora_fonte) REFERENCES POST(ID_Autore, Data_ora) ON DELETE CASCADE
+);
+
+CREATE TABLE POST_HAS_TAG (
+    Label VARCHAR(50),
+    ID_Autore INT,
+    Data_ora TIMESTAMP,
+    PRIMARY KEY (Label, ID_Autore, Data_ora),
+    FOREIGN KEY (ID_Autore, Data_ora) REFERENCES POST(ID_Autore, Data_ora) ON DELETE CASCADE
+);
+
+CREATE TABLE MENZIONE (
+    ID_Autore INT,
+    Data_ora_post TIMESTAMP,
+    ID_Mentioned INT,
+    PRIMARY KEY (ID_Autore, Data_ora_post, ID_Mentioned),
+    FOREIGN KEY (ID_Autore, Data_ora_post) REFERENCES POST(ID_Autore, Data_ora) ON DELETE CASCADE,
+    FOREIGN KEY (ID_Mentioned) REFERENCES UTENTE(ID_Utente) ON DELETE CASCADE
+);
+
+CREATE TABLE REAZIONE (
+    ID_Reazione INT PRIMARY KEY,
+    Label VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE FEEDBACK (
+    ID_Utente INT,
+    ID_Autore INT,
+    Data_ora_post TIMESTAMP,
+    ID_Reazione INT,
+    Data_ora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (ID_Utente, ID_Autore, Data_ora_post, ID_Reazione),
+    FOREIGN KEY (ID_Utente) REFERENCES UTENTE(ID_Utente) ON DELETE CASCADE,
+    FOREIGN KEY (ID_Autore, Data_ora_post) REFERENCES POST(ID_Autore, Data_ora) ON DELETE CASCADE,
+    FOREIGN KEY (ID_Reazione) REFERENCES REAZIONE(ID_Reazione) ON DELETE CASCADE
+);

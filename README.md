@@ -1,42 +1,129 @@
-# 7app - Social Media Platform
+# Seven App – Guida Completa al Progetto
 
-**7app** is an academic project based on a relational database with NoSQL extensions, designed to simulate a full-featured social media platform. It focuses on data management, user interaction analysis, and the development of recommendation algorithms.
+Struttura
+```
+/ (Root)
+├── MODIFYME.py
+├── Artefatti/
+└── progetto/
+```
 
-## 🔍 Project Description
+---
 
-This system allows users to:
+## 📂 Struttura del Progetto
 
-- Manage personal profiles with detailed information and content history.
-- Publish posts and interact through comments and reactions.
-- Follow other users and participate in interest-based groups.
-- Send and receive private messages (one-on-one and group).
-- Receive content and connection suggestions through recommendation algorithms.
-- Analyze user engagement and behavior trends with advanced queries.
+* **`MODIFYME.py`** (root): centralizza le credenziali MySQL e MongoDB.
+* **`Artefatti/`**: documentazione di progetto
 
-The backend is powered by a **MySQL** relational database and integrates **MongoDB** to handle semi-structured content such as textual posts, private messages, and image metadata.
+  * Modello relazionale, traccia d'esame, schemi SQL
+  * **`mongoDB/`**: ETL su MongoDB e 4 query di esempio (leggi `README.md` al suo interno)
+* **`progetto/`**: codice eseguibile
 
-## 🧱 Technologies Used
+  * `README.md`: istruzioni di setup e utilizzo CLI/webapp
+  * `menu.py`, `app.py`, `requirements.txt`
 
-- **MySQL** – for structured relational data management.
-- **MongoDB** – for flexible handling of semi-structured user-generated content.
+---
 
-## 🗂 Project Structure
+# ⚙️ Configurazione Iniziale
 
-The main project directory includes:
+## 1. Importare il DB su MySQL (dati+schema)
+La directory `Artefatti/TabelleSQL/Data_import` contiene sia i dati che lo schema del database da importare.
 
-- `Artefatti` subdirectory containing documentation (e.g., relational model, project description, exam info)
-- `progetto/` subdirectory containing a separate `README.md` with setup instructions and the Source Code for the web app and/or command-line utilities
+Per importare il database:
+1. Apri MySQL Workbench
+2. Vai su Server -> Data Import
+3. Seleziona "Import from Self-Contained File" o "Import from Dump Project Folder" e naviga fino alla cartella `Data_import`
+4. Clicca su "Refresh" per vedere le tabelle disponibili
+5. Seleziona tutte le tabelle da importare
+6. Clicca su "Start Import" per completare il processo
 
-## ⚙️ Initial Configuration
+In caso di problemi, provare a seguire il video tutorial nella cartella dedicata.
 
-Before running the application, you must:
+## 2. Crea un virtual env e installa le dipendenze
+### Su macOS/Linux
+```bash
+python -m venv venv && source venv/bin/activate
+pip install -r requirements.txt
+```
 
-1. Modify the `MODIFYME.py` file in the root directory with your database credentials.
+### Su Windows
+```bash
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+```
 
-## 🚀 Running the App Locally
+## 3. Apri **`MODIFYME.py`** (nella root) e sostituisci le seguenti righe con le tue credenziali:
 
-To run the application locally (via terminal or web interface):
+   ```python
+   # MODIFYME.py
+   # MySQL
+   MYSQL_HOST     = 'localhost'
+   MYSQL_USER     = 'root'               # verifica
+   MYSQL_PASSWORD = 'tua_password_mysql' # modifica
+   MYSQL_DB       = 'seven_app'          # nome db, forse da modificare
 
-1. **Read the `README.md` file located in the `progetto/` directory.**
-2. Follow the instructions to set up the database and launch the system.
+   # MongoDB Atlas
+   MONGO_USERNAME = 'tuo_user_atlas'     # modifica
+   MONGO_PASSWORD = 'tua_password_atlas' # nome db, forse da modificare
+   MONGO_URI      = 'mongodb+srv://<user>:<pass>@sevenapp.zbyc3hu.mongodb.net/seven_app_mongo?retryWrites=true&w=majority'
+   MONGO_DB       = 'seven_app_mongo'    # modifica
+   MONGO_COLL     = 'posts'
+   ```
 
+
+---
+
+## 💻 Esecuzione Applicazione di Progetto
+
+1. Vai nella directory dell’applicazione:
+
+   ```bash
+   cd progetto
+   ```
+2. Installa le dipendenze:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Avvia l’interfaccia CLI:
+
+   ```bash
+   python menu.py
+   ```
+4. Avvia la webapp o il secondo script di test:
+
+   ```bash
+   python app.py
+   ```
+---
+
+## 🚚 Esecuzione ETL e Analisi con MongoDB
+
+1. Entra nella cartella dei MongoDB artefatti:
+
+   ```bash
+   cd Artefatti/mongoDB
+   ```
+2. Installa le dipendenze:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Esegui l’ETL (estrazione, trasformazione, caricamento):
+
+   ```bash
+   python ETL_posts.py
+   ```
+4. Avvia lo script interattivo delle query:
+
+   ```bash
+   python run_queries_menu.py
+   ```
+
+---
+
+## 📖 Altre Documentazioni
+
+* **`Artefatti/`**: dettagli sul modello relazionale e sull’ETL MongoDB
+* **`progetto/README.md`**: approfondimenti sul setup e utilizzo dell’applicazione

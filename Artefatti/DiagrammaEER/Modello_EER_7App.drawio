@@ -1,0 +1,211 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36" version="27.0.4">
+  <diagram name="Pagina-1" id="E0pfQlQI4IXwQeC2mxdd">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="UlmOHTROWaXrv4-U3As--1" value="UTENTE&lt;div&gt;&lt;b&gt;&lt;u&gt;ID_Utente&lt;/u&gt;&lt;br&gt;&lt;/b&gt;Nickname&lt;br&gt;&lt;i&gt;Nome&lt;/i&gt;&lt;br&gt;&lt;i&gt;Foto_profilo&lt;/i&gt;&lt;br&gt;Data_di_nascita&lt;br&gt;&lt;i&gt;Genere&lt;/i&gt;&lt;br&gt;&lt;i&gt;Pronomi&lt;/i&gt;&lt;br&gt;&lt;i&gt;Biografia&lt;/i&gt;&lt;br&gt;E-mail&lt;br&gt;Password&lt;br&gt;Telefono&lt;br&gt;Verificato?&lt;br&gt;&lt;i&gt;Link&lt;br&gt;&lt;/i&gt;Contenuti_sensibili?&lt;/div&gt;" style="whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="350" y="250" width="157" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--2" value="FOLLOW&lt;br&gt;Data-ora invio" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="360" y="60" width="134" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--3" value="invia" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;rotation=-90;" vertex="1" parent="1">
+          <mxGeometry x="354" y="210" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--4" value="è ricevuto" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;rotation=-90;" vertex="1" parent="1">
+          <mxGeometry x="464" y="140" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--5" value="" style="fontSize=12;html=1;endArrow=ERzeroToMany;startArrow=ERmandOne;rounded=0;exitX=0.351;exitY=-0.006;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="UlmOHTROWaXrv4-U3As--1">
+          <mxGeometry width="100" height="100" relative="1" as="geometry">
+            <mxPoint x="360" y="360" as="sourcePoint" />
+            <mxPoint x="404" y="130" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--6" value="" style="fontSize=12;html=1;endArrow=ERzeroToMany;startArrow=ERmandOne;rounded=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;exitX=0.709;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="UlmOHTROWaXrv4-U3As--1" target="UlmOHTROWaXrv4-U3As--2">
+          <mxGeometry width="100" height="100" relative="1" as="geometry">
+            <mxPoint x="360" y="360" as="sourcePoint" />
+            <mxPoint x="460" y="260" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--7" value="riceve" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;rotation=-90;" vertex="1" parent="1">
+          <mxGeometry x="449" y="210" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--8" value="è inviato" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;rotation=-90;" vertex="1" parent="1">
+          <mxGeometry x="354" y="140" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--9" value="MENZIONE&lt;br&gt;&lt;u&gt;ID_Autore&lt;br&gt;Data-ora_post&lt;br&gt;ID_Mentioned&lt;/u&gt;" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="670" y="340" width="120" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--10" value="" style="fontSize=12;html=1;endArrow=ERzeroToMany;startArrow=ERmandOne;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="UlmOHTROWaXrv4-U3As--1" target="UlmOHTROWaXrv4-U3As--9">
+          <mxGeometry width="100" height="100" relative="1" as="geometry">
+            <mxPoint x="484" y="500" as="sourcePoint" />
+            <mxPoint x="824" y="877" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--11" value="riceve" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;rotation=0;" vertex="1" parent="1">
+          <mxGeometry x="500" y="380" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--12" value="è ricevuta" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;rotation=0;" vertex="1" parent="1">
+          <mxGeometry x="610" y="380" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--13" value="POST&lt;br&gt;&lt;b&gt;&lt;u&gt;ID_Autore&lt;br&gt;Data-ora&lt;/u&gt;&lt;/b&gt;&lt;div&gt;&lt;i&gt;ID_Autore_fonte&lt;br&gt;Data-ora_fonte&lt;/i&gt;&lt;br&gt;Contenuto&lt;br&gt;Sensibile?&lt;br&gt;Modificato?&lt;/div&gt;" style="shape=ext;margin=3;double=1;whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="368.5" y="580" width="120" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--15" value="" style="edgeStyle=entityRelationEdgeStyle;fontSize=12;html=1;endArrow=ERzeroToMany;endFill=1;startArrow=ERzeroToMany;rounded=0;entryX=0.997;entryY=0.197;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" target="UlmOHTROWaXrv4-U3As--13">
+          <mxGeometry width="100" height="100" relative="1" as="geometry">
+            <mxPoint x="490" y="680" as="sourcePoint" />
+            <mxPoint x="620" y="970" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--16" value="&lt;font style=&quot;font-size: 10px;&quot;&gt;commenta&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="488.5" y="580" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--17" value="&lt;font style=&quot;font-size: 8px;&quot;&gt;è commentato&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="488.5" y="675" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--18" value="TAG&lt;br&gt;&lt;u style=&quot;&quot;&gt;&lt;b&gt;Label&lt;/b&gt;&lt;/u&gt;" style="whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="378.5" y="830" width="100" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--19" value="" style="fontSize=12;html=1;endArrow=ERzeroToMany;endFill=1;startArrow=ERzeroToMany;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="UlmOHTROWaXrv4-U3As--18" target="UlmOHTROWaXrv4-U3As--13">
+          <mxGeometry width="100" height="100" relative="1" as="geometry">
+            <mxPoint x="380" y="1090" as="sourcePoint" />
+            <mxPoint x="480" y="990" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--20" value="" style="edgeStyle=entityRelationEdgeStyle;fontSize=12;html=1;endArrow=ERzeroToMany;startArrow=ERmandOne;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="UlmOHTROWaXrv4-U3As--13" target="UlmOHTROWaXrv4-U3As--21">
+          <mxGeometry width="100" height="100" relative="1" as="geometry">
+            <mxPoint x="250" y="960" as="sourcePoint" />
+            <mxPoint x="110" y="920" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--21" value="FEEDBACK&lt;br&gt;&lt;u style=&quot;font-weight: bold;&quot;&gt;ID_Utente&lt;/u&gt;&lt;br&gt;&lt;u style=&quot;font-weight: bold;&quot;&gt;ID_Autore&lt;/u&gt;&lt;br&gt;&lt;u style=&quot;font-weight: bold;&quot;&gt;Data-ora_post&lt;/u&gt;&lt;br&gt;ID_Reazione&lt;br&gt;Data-ora" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="-40" y="595" width="100" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--22" value="contiene" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="300" y="620" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--23" value="è contenuto" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="70" y="620" width="70" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--24" value="contiene" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;rotation=90;" vertex="1" parent="1">
+          <mxGeometry x="418.5" y="790" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--25" value="è contenuto" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;rotation=-90;" vertex="1" parent="1">
+          <mxGeometry x="379" y="740" width="70" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--26" value="REAZIONE&lt;br&gt;&lt;u style=&quot;font-weight: bold;&quot;&gt;ID_Reazione&lt;/u&gt;&lt;br&gt;Descrizione" style="whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="-40" y="820" width="100" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--27" value="" style="fontSize=12;html=1;endArrow=ERzeroToMany;startArrow=ERmandOne;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="UlmOHTROWaXrv4-U3As--26" target="UlmOHTROWaXrv4-U3As--21">
+          <mxGeometry width="100" height="100" relative="1" as="geometry">
+            <mxPoint x="40" y="1050" as="sourcePoint" />
+            <mxPoint x="140" y="950" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--28" value="&lt;font style=&quot;font-size: 10px;&quot;&gt;contiene&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;rotation=-90;" vertex="1" parent="1">
+          <mxGeometry x="-35" y="710" width="50" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--29" value="&lt;font style=&quot;font-size: 10px;&quot;&gt;è contenuta&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;rotation=90;" vertex="1" parent="1">
+          <mxGeometry x="-10" y="770" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--30" value="" style="fontSize=12;html=1;endArrow=ERzeroToMany;startArrow=ERmandOne;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.553;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="UlmOHTROWaXrv4-U3As--13" target="UlmOHTROWaXrv4-U3As--9">
+          <mxGeometry width="100" height="100" relative="1" as="geometry">
+            <mxPoint x="450" y="800" as="sourcePoint" />
+            <mxPoint x="550" y="700" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--31" value="è inclusa" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;rotation=-30;" vertex="1" parent="1">
+          <mxGeometry x="680" y="425" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--32" value="include" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;rotation=-30;" vertex="1" parent="1">
+          <mxGeometry x="434" y="530" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--34" value="" style="fontSize=12;html=1;endArrow=ERzeroToMany;startArrow=ERmandOne;rounded=0;exitX=0.001;exitY=0.721;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="UlmOHTROWaXrv4-U3As--1" target="UlmOHTROWaXrv4-U3As--35">
+          <mxGeometry width="100" height="100" relative="1" as="geometry">
+            <mxPoint x="90" y="550" as="sourcePoint" />
+            <mxPoint x="40" y="375" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--35" value="MESSAGGIO_INDIVIDUALE&lt;br&gt;&lt;u style=&quot;font-weight: bold;&quot;&gt;ID_Sender&lt;/u&gt;&lt;br&gt;&lt;u style=&quot;font-weight: bold;&quot;&gt;ID_Ricevente&lt;/u&gt;&lt;br&gt;&lt;u style=&quot;font-weight: bold;&quot;&gt;Data-ora&lt;/u&gt;&lt;br&gt;Contenuto" style="shape=ext;margin=3;double=1;whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="-140" y="380" width="180" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--37" value="invia" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="280" y="405" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--38" value="è inviato" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="45" y="405" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--39" value="" style="fontSize=12;html=1;endArrow=ERzeroToMany;startArrow=ERmandOne;rounded=0;exitX=0.001;exitY=0.815;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="UlmOHTROWaXrv4-U3As--1" target="UlmOHTROWaXrv4-U3As--35">
+          <mxGeometry width="100" height="100" relative="1" as="geometry">
+            <mxPoint x="90" y="550" as="sourcePoint" />
+            <mxPoint x="190" y="450" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--40" value="riceve" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="280" y="455" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--42" value="è ricevuto" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="45" y="455" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--45" value="MESSAGGIO_DI_GRUPPO&lt;br&gt;&lt;u style=&quot;font-weight: bold;&quot;&gt;ID_Sender&lt;/u&gt;&lt;br&gt;&lt;u style=&quot;font-weight: bold;&quot;&gt;ID_Gruppo&lt;/u&gt;&lt;br&gt;&lt;u style=&quot;font-weight: bold;&quot;&gt;Data-ora&lt;/u&gt;&lt;br&gt;Contenuto" style="shape=ext;margin=3;double=1;whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="-160" y="250" width="220" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--46" value="" style="edgeStyle=entityRelationEdgeStyle;fontSize=12;html=1;endArrow=ERzeroToMany;startArrow=ERmandOne;rounded=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0.007;exitY=0.202;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="UlmOHTROWaXrv4-U3As--1" target="UlmOHTROWaXrv4-U3As--45">
+          <mxGeometry width="100" height="100" relative="1" as="geometry">
+            <mxPoint x="190" y="350" as="sourcePoint" />
+            <mxPoint x="290" y="250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--47" value="" style="edgeStyle=entityRelationEdgeStyle;fontSize=12;html=1;endArrow=ERzeroToMany;startArrow=ERmandOne;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="UlmOHTROWaXrv4-U3As--45">
+          <mxGeometry width="100" height="100" relative="1" as="geometry">
+            <mxPoint x="-400" y="300" as="sourcePoint" />
+            <mxPoint x="-170" y="250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--48" value="GRUPPO&lt;br&gt;&lt;u style=&quot;font-weight: bold;&quot;&gt;ID_Gruppo&lt;/u&gt;&lt;br&gt;Nome&lt;br&gt;Foto_gruppo&lt;br&gt;&lt;i&gt;Descrizione&lt;/i&gt;" style="whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="-550" y="250" width="150" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--49" value="" style="edgeStyle=entityRelationEdgeStyle;fontSize=12;html=1;endArrow=ERoneToMany;startArrow=ERmandOne;rounded=0;exitX=1.001;exitY=0.109;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="UlmOHTROWaXrv4-U3As--48">
+          <mxGeometry width="100" height="100" relative="1" as="geometry">
+            <mxPoint x="-160" y="350" as="sourcePoint" />
+            <mxPoint x="-170" y="80" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--50" value="GRUPPO_HAS_UTENTE&lt;br&gt;&lt;u style=&quot;font-weight: bold;&quot;&gt;ID_Gruppo&lt;/u&gt;&lt;br&gt;&lt;u style=&quot;font-weight: bold;&quot;&gt;ID_Utente&lt;/u&gt;&lt;br&gt;Admin?" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="-170" y="30" width="170" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--51" value="" style="edgeStyle=entityRelationEdgeStyle;fontSize=12;html=1;endArrow=ERzeroToMany;startArrow=ERmandOne;rounded=0;exitX=0.001;exitY=0.062;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="UlmOHTROWaXrv4-U3As--1" target="UlmOHTROWaXrv4-U3As--50">
+          <mxGeometry width="100" height="100" relative="1" as="geometry">
+            <mxPoint x="-160" y="350" as="sourcePoint" />
+            <mxPoint x="-60" y="250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--52" value="invia" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="294" y="300" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--54" value="è inviato" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="300" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--55" value="è inviato" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-220" y="300" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UlmOHTROWaXrv4-U3As--56" value="contiene" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-400" y="300" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="uq1VK4ffqiDHwTdXf_TK-1" value="" style="fontSize=12;html=1;endArrow=ERzeroToMany;startArrow=ERmandOne;rounded=0;exitX=0.338;exitY=0.991;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.298;entryY=-0.007;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="UlmOHTROWaXrv4-U3As--1" target="UlmOHTROWaXrv4-U3As--13">
+          <mxGeometry width="100" height="100" relative="1" as="geometry">
+            <mxPoint x="420" y="620" as="sourcePoint" />
+            <mxPoint x="520" y="520" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uq1VK4ffqiDHwTdXf_TK-2" value="scrive" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;rotation=-90;" vertex="1" parent="1">
+          <mxGeometry x="350" y="510" width="60" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="uq1VK4ffqiDHwTdXf_TK-4" value="è scritto" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;rotation=90;" vertex="1" parent="1">
+          <mxGeometry x="389" y="540" width="60" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

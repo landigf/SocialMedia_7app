@@ -13,7 +13,9 @@ pip install -r requirements.txt
 ```
 
 # 2. Modifica la password MySQL
-Apri il file `helper.py` e modifica la password di MySQL nella funzione `get_db_connection()`:
+Se avete già modificato il file `MODIFYME.py` nella cartella principale, puoi saltare questo passaggio.
+
+Aprite il file `helper.py` e modifica la password di MySQL nella funzione `get_db_connection()`:
 
 ```python
 def get_db_connection():
